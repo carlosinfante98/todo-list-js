@@ -98,6 +98,9 @@ divTodoList.addEventListener('click', (event) => {
         if( todoList.todos.length === 0){
             btnAllComplete.classList.add('hidden');
         }
+        if( btnCompletePressed ){
+            btnAllComplete.click();
+        }
     }
     actualizarContador();
 });
