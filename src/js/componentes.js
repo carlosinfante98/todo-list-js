@@ -102,7 +102,7 @@ divTodoList.addEventListener('click', (event) => {
         if( todoList.todos.length === 0){
             btnAllComplete.classList.add('hidden');
         }
-        if( btnCompletePressed ){
+        if( btnCompletePressed &&  todoList.todos.length == 1 ){
             btnAllComplete.click();
         }
         const completosRestantes = todoList.todos.filter(todo => todo.completado);
