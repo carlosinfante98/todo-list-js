@@ -52,11 +52,21 @@ export class TodoList {
         const pendientes = this.todos.filter(todo => !todo.completado);
         todoContador.innerText = pendientes.length;
 
+        const btnAllComplete = document.querySelector('#all-complete-button');
+        if(this.todos.length > 0){
+            btnAllComplete.classList.remove('hidden');
+        }
+
         const btnBorrarCompletados = document.querySelector('.clear-completed');
         const completados = this.todos.length - pendientes.length;
 
         if( completados > 0){
             btnBorrarCompletados.classList.remove('hidden');
+        }
+        if( completados === this.todos.length){
+            setTimeout(() => {
+                btnAllComplete.click();
+            }, 50);
         }
     }
 }

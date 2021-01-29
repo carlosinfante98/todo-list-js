@@ -7,7 +7,7 @@ const txtInput = document.querySelector('.new-todo');
 const btnBorrarCompletados = document.querySelector('.clear-completed');
 const ulFiltros = document.querySelector('.filters');
 const anchorFiltros = document.querySelectorAll('.filtro');
-const btnAllComplete = document.querySelector('#all-complete-button');
+export const btnAllComplete = document.querySelector('#all-complete-button');
 let btnCompletePressed = false;
 
 export const crearTodoHtml = (todo) => {
@@ -36,20 +36,24 @@ const actualizarContador = () => {
     todoContador.innerText = pendientes.length;
 };
 
-// Eventos
+// EVENTOS
 
+// Listener para el input donde se escriben los inputs
 txtInput.addEventListener('keyup', (event) => {
     if(event.keyCode == 13 && txtInput.value.length > 0){
         const nuevoTodo = new Todo(txtInput.value);
         todoList.nuevoTodo(nuevoTodo);
         crearTodoHtml(nuevoTodo);
         txtInput.value = '';
+        btnAllComplete.classList.remove('hidden');
         actualizarContador();
     }
 });
 
+// Listener para la lista de todos
 divTodoList.addEventListener('click', (event) => {
-
+    const completadosAntesClick = todoList.todos.filter(todo => todo.completado);
+    let estabaLleno = completadosAntesClick.length == todoList.todos.length;
     const nombreElemento = event.target.localName; //input, label, button
     const todoElemento = event.target.parentElement.parentElement;
     const todoId = todoElemento.getAttribute('data-id');
@@ -64,15 +68,41 @@ divTodoList.addEventListener('click', (event) => {
         }
         else{
             btnBorrarCompletados.classList.add('hidden');
+            if( btnCompletePressed ){
+                btnAllComplete.click();
+            }
+        }
+
+        if( completados.length == todoList.todos.length){
+            btnAllComplete.click();
+        }
+        else{
+            if( estabaLleno ){
+                btnAllComplete.click();
+                todoList.marcarTodos(true);
+                for(const elem of divTodoList.children){
+                    elem.classList.toggle('completed');
+                    const checkbox = elem.getElementsByClassName('toggle').item(0);
+                    checkbox.checked = true;
+                }
+                todoList.marcarCompletado(todoId);
+                todoElemento.classList.toggle('completed');
+                event.target.checked = false;
+                btnBorrarCompletados.classList.remove('hidden');
+            }
         }
     }
-    else if( nombreElemento.includes('button')){
+    else if( nombreElemento.includes('button') ){
         todoList.eliminarTodo(todoId);
         divTodoList.removeChild(todoElemento);
+        if( todoList.todos.length === 0){
+            btnAllComplete.classList.add('hidden');
+        }
     }
     actualizarContador();
 });
 
+// Listener para boton de borrar completados
 btnBorrarCompletados.addEventListener('click', () => {
     todoList.eliminarCompletados();
 
@@ -86,8 +116,13 @@ btnBorrarCompletados.addEventListener('click', () => {
     }
     actualizarContador();
     btnBorrarCompletados.classList.add('hidden');
+    if( todoList.todos.length === 0){
+        btnAllComplete.classList.add('hidden');
+        btnAllComplete.click();
+    }
 });
 
+// Listener para botones de filtros
 ulFiltros.addEventListener('click', (event) => {
     const filtro = event.target.text;
     if(!filtro) {return ;}
@@ -114,6 +149,7 @@ ulFiltros.addEventListener('click', (event) => {
     }
 });
 
+// Listener para el boton de completar todos los todos
 btnAllComplete.addEventListener('click', (event) => {
     btnCompletePressed = !btnCompletePressed;
     
