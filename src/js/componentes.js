@@ -78,6 +78,7 @@ divTodoList.addEventListener('click', (event) => {
         }
         else{
             if( estabaLleno ){
+                
                 btnAllComplete.click();
                 todoList.marcarTodos(true);
                 for(const elem of divTodoList.children){
@@ -89,6 +90,9 @@ divTodoList.addEventListener('click', (event) => {
                 todoElemento.classList.toggle('completed');
                 event.target.checked = false;
                 btnBorrarCompletados.classList.remove('hidden');
+                if(todoList.todos.length == 1){
+                    btnAllComplete.click();
+                }
             }
         }
     }
@@ -100,6 +104,10 @@ divTodoList.addEventListener('click', (event) => {
         }
         if( btnCompletePressed ){
             btnAllComplete.click();
+        }
+        const completosRestantes = todoList.todos.filter(todo => todo.completado);
+        if(completosRestantes.length === 0){
+            btnBorrarCompletados.classList.add('hidden');
         }
     }
     actualizarContador();
